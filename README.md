@@ -10,8 +10,6 @@ After comprehensive testing, this approach was deemed **not viable** for the cur
 
 The model achieved an overall accuracy of **31% (13/42 tests passed)**, which is insufficient for reliable triple extraction.
 
-### Performance by Category
-
 ### Conclusion
 
 The model struggles with nuanced language understanding required for reliable triple extraction. While it performs adequately on simple pattern-matching tasks and basic commonsense reasoning, it fails on the more complex linguistic phenomena that are essential for real-world applications:
