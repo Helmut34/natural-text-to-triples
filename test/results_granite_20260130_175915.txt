@@ -1,0 +1,150 @@
+pattern_01_nonsensical
+Input: Paris is larger than France.
+Output: NONE
+
+pattern_02_reversed_causality
+Input: The fire was caused by the water.
+Output: NONE
+
+pattern_03_impossible_physical
+Input: The shadow lifted the boulder.
+Output: (none)
+
+pattern_04_category_error
+Input: The number seven tastes blue.
+Output: NONE
+
+pattern_05_valid_control
+Input: Mount Everest is taller than Mount Fuji.
+Output: (mount everest; taller than; mount fuji)
+
+context_01_contradictory_roles
+Input: Alice is Bob's manager at TechCorp. She oversees his quarterly reviews.
+
+Several months later, the company restructured. Bob now handles all personnel decisions for the engineering department, including performance evaluations for Alice.
+Output: (alice; is manager of; bob), (alice; oversees; bob's quarterly reviews), (bob; handles all personnel decisions for; engineering department), (bob; makes performance evaluations for; alice)
+
+context_02_changing_state
+Input: The startup was founded in 2018 with $50,000 in seed funding. By 2020, they had raised Series A funding of $2 million. In 2023, after the acquisition by MegaCorp, the company no longer exists as an independent entity.
+Output: (startup; founded in; 2018), (startup; with; 50,000 in seed funding), (startup; had raised; 2 million in series a funding), (startup; acquired by; mega corp), (startup; no longer exists as; independent entity)
+
+coref_01_pronoun
+Input: The Transformer architecture was introduced by Vaswani et al. in 2017. It revolutionized natural language processing. The model uses self-attention mechanisms.
+Output: (transformer; introduced by; vaswani et al), (transformer; introduced in; 2017), (transformer; revolutionized; natural language processing), (transformer; uses; self-attention mechanisms)
+
+coref_02_alias
+Input: Dr. Robert Smith published the study. Bob, as his colleagues call him, spent three years on the research. Smith's findings were groundbreaking.
+Output: (dr. robert smith; published; study), (robert smith; was called; bob), (bob; was colleagues of; dr. robert smith)
+
+coref_03_implicit
+Input: Einstein developed the theory of relativity. The German-born physicist later moved to America. His work on photoelectric effect won the Nobel Prize.
+Output: (einstein; developed; theory of relativity), (einstein; was born in; germany), (einstein; moved to; america), (einstein; received nobel prize for; photoelectric effect)
+
+coref_04_ambiguous
+Input: John told Mike that he was promoted. He was very happy about it.
+Output: (mike; told by; john), (john; told; mike), (john; was very happy about; being promoted)
+
+implicit_01_causal
+Input: John resigned after the scandal broke.
+Output: (john; resigned; after; scandal broke)
+
+implicit_02_temporal
+Input: Sarah finished her PhD before joining Google.
+Output: (sarah; finished; phd), (sarah; joined; google)
+
+implicit_03_possession
+Input: The doctor reached for her stethoscope.
+Output: (doctor; reached for; stethoscope)
+
+implicit_04_consequence
+Input: The company missed three consecutive earnings targets. The CEO was replaced the following month.
+Output: (company; missed; three consecutive earnings targets), (company; replaced ceo; following month)
+
+negation_01_simple
+Input: Smoking does not improve health.
+Output: (smoking; does not improve; health)
+
+negation_02_double
+Input: It is not uncommon for startups to fail.
+Output: (none)
+
+negation_03_possibility
+Input: Coffee may reduce the risk of diabetes.
+Output: (coffee; may reduce; risk of diabetes)
+
+negation_04_hypothetical
+Input: If the experiment had succeeded, we would have proven the hypothesis.
+Output: NONE
+
+negation_05_nonexistence
+Input: There is no evidence that vaccines cause autism.
+Output: none
+
+negation_06_conditional
+Input: Unless properly stored, the medicine will not remain effective.
+Output: (medicine; will not remain effective; unless properly stored)
+
+temporal_01_former
+Input: Steve Jobs was the former CEO of Apple.
+Output: (steve jobs; was former ceo of; apple)
+
+temporal_02_timebound
+Input: As of 2022, Elon Musk owned Twitter.
+Output: (elon musk; owned; twitter)
+
+temporal_03_sequence
+Input: Before the merger, Company A operated independently. After 2019, it became a subsidiary of MegaCorp.
+Output: (company a; operated independently before; merger), (company a; became subsidiary after; mega corp)
+
+temporal_04_future
+Input: SpaceX plans to send humans to Mars by 2030.
+Output: (spacex; plans to send; humans to mars)
+
+temporal_05_historical
+Input: Constantinople was the capital of the Byzantine Empire. Istanbul is now a major city in Turkey.
+Output: (constinople; was capital of; byzantine empire), (istanbul; is now; major city in turkey)
+
+commonsense_01_physical
+Input: John put the elephant in his pocket.
+Output: NONE
+
+commonsense_02_social
+Input: The job candidate insulted the interviewer and got hired immediately.
+Output: (job candidate; insulted; interviewer), (job candidate; got hired immediately)
+
+commonsense_03_causal_nonsense
+Input: The ice cream melted because it was placed in the freezer.
+Output: (ice cream; melted; because it was placed in the freezer)
+
+commonsense_04_scale
+Input: The ant carried the car to the garage.
+Output: NONE
+
+commonsense_05_valid_control
+Input: The glass shattered when it hit the concrete floor.
+Output: (glass; shattered; when it hit the concrete floor)
+
+commonsense_06_context_dependent
+Input: The bank was full of fish.
+Output: NONE
+
+faithful_01_resist_knowledge
+Input: Marie Curie conducted research on radioactivity.
+Output: (marie curie; conducted research on; radioactivity)
+
+faithful_02_resist_completion
+Input: The company was founded in Silicon Valley.
+Output: (company; was founded in; silicon valley)
+
+faithful_03_hedged
+Input: Studies suggest a correlation between sleep and productivity.
+Output: (studies; suggest; correlation between sleep and productivity)
+
+faithful_04_attributed
+Input: Some researchers believe that meditation reduces stress.
+Output: (researchers; believe; meditation reduces stress)
+
+faithful_05_quoted
+Input: John claimed that the project was a success.
+Output: (john; claimed; project was success)
+

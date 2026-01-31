@@ -20,11 +20,4 @@ Several months later, the company restructured. Bob now handles all personnel de
         ],
         "reject": [("startup", "exists as", "independent entity")],
     },
-    "context_03_definition_contradiction": {
-        "text": """For this document, "active user" means someone who logged in within 30 days. We have 10,000 active users.
-
-Note: Above metrics use a 7-day window for "active user" calculations.""",
-        "extract": [],
-        "reject": [],
-    },
 }

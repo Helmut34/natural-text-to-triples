@@ -1,19 +1,40 @@
+from transformers import T5Tokenizer, T5ForConditionalGeneration
 import torch
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
+MODEL_PATH = "pat-jj/text2triple-flan-t5"
 
-tokenizer = AutoTokenizer.from_pretrained("pat-jj/text2triple-flan-t5")
-model = AutoModelForSeq2SeqLM.from_pretrained("pat-jj/text2triple-flan-t5").to(device)
+tokenizer = T5Tokenizer.from_pretrained(MODEL_PATH)
+model = T5ForConditionalGeneration.from_pretrained(
+    MODEL_PATH,
+    device_map="auto",
+    torch_dtype=torch.bfloat16
+)
+
 
 def text_to_triples(input_text):
+    inputs = tokenizer(
+        input_text,
+        max_length=512,
+        padding='max_length',
+        truncation=True,
+        return_tensors="pt"
+    )
 
-    inputs = tokenizer(input_text, return_tensors="pt").to(device)
+    input_ids = inputs['input_ids'].to(model.device)
+    attention_mask = inputs['attention_mask'].to(model.device)
 
-    outputs = model.generate(**inputs)
+    with torch.no_grad():
+        outputs = model.generate(
+            input_ids=input_ids,
+            attention_mask=attention_mask,
+            max_length=512,
+            num_beams=4,
+            early_stopping=True,
+            length_penalty=0.6,
+            use_cache=True
+        )
 
-    triples = tokenizer.batch_decode(outputs, skip_special_tokens=True)
-
+    triples = tokenizer.decode(outputs[0], skip_special_tokens=True)
     return triples
 
 

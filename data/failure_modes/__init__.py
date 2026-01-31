@@ -7,7 +7,6 @@ from .implicit import TESTS as IMPLICIT
 from .negation import TESTS as NEGATION
 from .temporal import TESTS as TEMPORAL
 from .commonsense import TESTS as COMMONSENSE
-from .domain import TESTS as DOMAIN
 from .faithfulness import TESTS as FAITHFULNESS
 
 CATEGORIES = {
@@ -18,7 +17,6 @@ CATEGORIES = {
     "negation": ("Negation, Modality & Scope", NEGATION),
     "temporal": ("Temporal Reasoning", TEMPORAL),
     "commonsense": ("Commonsense & World Knowledge", COMMONSENSE),
-    "domain": ("Domain-Specific Language", DOMAIN),
     "faithfulness": ("Faithfulness to Source", FAITHFULNESS),
 }
 

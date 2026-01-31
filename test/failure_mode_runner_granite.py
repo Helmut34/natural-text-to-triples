@@ -1,8 +1,10 @@
 import sys
+from datetime import datetime
+
 sys.path.insert(0, '/home/helmut/natural-text-to-triples')
 
 from data.failure_modes import CATEGORIES, ALL_TESTS
-from model.txt2triples import text_to_triples
+from model.txt2triples_granite import text_to_triples
 
 
 def normalize(t):
@@ -16,7 +18,6 @@ def parse_output(output):
     if not output:
         return triples
 
-    # Handle list output from batch_decode
     if isinstance(output, list):
         output_str = output[0] if output else ""
     else:
@@ -25,16 +26,33 @@ def parse_output(output):
     if not output_str or not output_str.strip():
         return triples
 
-    output_str = output_str.strip()
-    if output_str.startswith('('):
-        output_str = output_str[1:]
-    if output_str.endswith(')'):
-        output_str = output_str[:-1]
+    output_str = output_str.strip().lower()
 
-    for t in output_str.split('), ('):
-        t = t.strip('()')
-        parts = [p.strip().lower() for p in t.split(';')]
-        if len(parts) == 3:
+    # Handle "none" or empty responses
+    if output_str in ("none", "[]", "n/a", "no triples"):
+        return triples
+
+    # Remove any leading explanation text before first (
+    if '(' in output_str:
+        output_str = output_str[output_str.index('('):]
+
+    # Remove trailing explanation text after last )
+    if ')' in output_str:
+        output_str = output_str[:output_str.rindex(')') + 1]
+
+    # Handle numbered lists like "1. (s; p; o)"
+    import re
+    output_str = re.sub(r'\d+\.\s*', '', output_str)
+
+    # Split on ), ( pattern with flexible whitespace
+    for t in re.split(r'\)\s*,\s*\(', output_str):
+        t = t.strip('() \n\t')
+        # Try semicolon first, then comma
+        if ';' in t:
+            parts = [p.strip().strip('"\'').lower() for p in t.split(';')]
+        else:
+            parts = [p.strip().strip('"\'').lower() for p in t.split(',')]
+        if len(parts) == 3 and all(parts):
             triples.add(tuple(parts))
 
     return triples
@@ -47,29 +65,25 @@ def evaluate_test(test_id, test_data):
 
     expected = set(normalize(t) for t in test_data.get("extract", []))
     rejected = set(normalize(t) for t in test_data.get("reject", []))
-    inferred = set(normalize(t) for t in test_data.get("inferred_ok", []))
 
-    correct = predicted & expected
     missed = expected - predicted
     hallucinations = predicted & rejected
-    bonus = predicted & inferred
 
     return {
         "test_id": test_id,
         "category": test_data.get("category", "unknown"),
-        "predicted": predicted,
-        "correct": correct,
+        "input_text": test_data["text"],
+        "raw_output": output,
         "missed": missed,
         "hallucinations": hallucinations,
-        "bonus_inferences": bonus,
-        "passed": len(hallucinations) == 0 and missed == set(),
+        "passed": len(hallucinations) == 0 and len(missed) == 0,
     }
 
 
 def run_all():
     """Run all tests and print results."""
     print("=" * 60)
-    print("FAILURE MODE TEST SUITE")
+    print("FAILURE MODE TEST SUITE - GRANITE 4")
     print("=" * 60)
 
     results_by_category = {}
@@ -101,14 +115,10 @@ def run_all():
         for r in results:
             status = "PASS" if r["passed"] else "FAIL"
             print(f"\n[{status}] {r['test_id']}")
-            if r["correct"]:
-                print(f"  + Correct: {len(r['correct'])}")
             if r["missed"]:
                 print(f"  - Missed: {r['missed']}")
             if r["hallucinations"]:
                 print(f"  ! HALLUCINATION: {r['hallucinations']}")
-            if r["bonus_inferences"]:
-                print(f"  * Bonus inference: {r['bonus_inferences']}")
 
         print(f"\nCategory: {passed}/{total} ({100*passed/total:.0f}%)")
 
@@ -116,29 +126,18 @@ def run_all():
     print(f"TOTAL: {total_passed}/{total_tests} ({100*total_passed/total_tests:.0f}%)")
     print("=" * 60)
 
-
-def run_category(category):
-    """Run tests for a single category."""
-    if category not in CATEGORIES:
-        print(f"Unknown category: {category}")
-        print(f"Available: {list(CATEGORIES.keys())}")
-        return
-
-    cat_name, tests = CATEGORIES[category]
-    print(f"Testing: {cat_name}")
-    print("-" * 40)
-
-    for test_id, test_data in tests.items():
-        test_with_cat = {**test_data, "category": category}
-        result = evaluate_test(test_id, test_with_cat)
-        status = "PASS" if result["passed"] else "FAIL"
-        print(f"[{status}] {test_id}")
-        if result["hallucinations"]:
-            print(f"   HALLUCINATION: {result['hallucinations']}")
+    # Save results for manual verification
+    output_file = f"/home/helmut/natural-text-to-triples/test/results_granite_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+    with open(output_file, 'w') as f:
+        for cat_key in CATEGORIES:
+            if cat_key not in results_by_category:
+                continue
+            for r in results_by_category[cat_key]:
+                f.write(f"{r['test_id']}\n")
+                f.write(f"Input: {r['input_text']}\n")
+                f.write(f"Output: {r['raw_output']}\n\n")
+    print(f"\nResults saved to: {output_file}")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        run_category(sys.argv[1])
-    else:
-        run_all()
+    run_all()
